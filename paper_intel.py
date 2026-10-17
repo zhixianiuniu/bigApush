@@ -6,12 +6,13 @@ FEISHU_WEBHOOK = os.environ["FEISHU_WEBHOOK"]
 FEISHU_SECRET = os.environ.get("FEISHU_SECRET", "")
 
 KEYWORDS = {
-    "P·政策监管": ["证监会", "基金投顾", "投资咨询", "投顾", "网络营销", "管理办法",
-                "证券基金", "执业规范", "适当性"],
-    "E·经济财富": ["财富管理", "居民存款", "理财", "佣金", "费率", "个人养老金"],
-    "S·社会投资者": ["投资者保护", "新开户", "90后", "Z世代", "投资者教育"],
-    "T·技术AI": ["智能投顾", "大模型", "AI", "人工智能", "金融科技", "算法",
-               "数字员工", "智能客服"],
+    "P·政策监管": ["证监会", "基金投顾", "投资咨询", "投资顾问", "网络营销", "基金销售",
+                "管理办法", "执业规范", "适当性"],
+    "E·经济财富": ["财富管理", "券商", "证券公司", "证券行业", "营业部", "佣金", "费率",
+                "个人养老金", "理财"],
+    "S·社会投资者": ["投资者保护", "新开户", "投资者教育", "新中产"],
+    "T·技术AI": ["智能投顾", "智能投研", "大模型", "AI投顾", "AI理财", "AI客服",
+               "人工智能", "金融科技"],
 }
 
 def fetch_roll(lid, num=50, pages=3):
@@ -57,6 +58,8 @@ def main():
             if grp:
                 hits.append({"grp": grp, "title": title,
                              "time": time.strftime("%m-%d", time.localtime(float(t))) if t else ""})
+                    order = {"P·政策监管": 0, "E·经济财富": 1, "S·社会投资者": 2, "T·技术AI": 3}
+    hits.sort(key=lambda h: (order.get(h["grp"], 9), h["time"]))
     lines, used = [], {}
     for h in hits:
         if used.get(h["grp"], 0) >= 5 or len(lines) >= 15:
