@@ -58,7 +58,7 @@ def main():
             if grp:
                 hits.append({"grp": grp, "title": title,
                              "time": time.strftime("%m-%d", time.localtime(float(t))) if t else ""})
-                    order = {"P·政策监管": 0, "E·经济财富": 1, "S·社会投资者": 2, "T·技术AI": 3}
+    order = {"P·政策监管": 0, "E·经济财富": 1, "S·社会投资者": 2, "T·技术AI": 3}
     hits.sort(key=lambda h: (order.get(h["grp"], 9), h["time"]))
     lines, used = [], {}
     for h in hits:
