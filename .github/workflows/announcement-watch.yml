@@ -1,0 +1,27 @@
+name: 持仓公告监控
+
+on:
+  schedule:
+    - cron: '*/6 7-14 * * *'
+    - cron: '3 0-6,15-23 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 检查新公告
+        env:
+          FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+        run: python3 announcement_watch.py
+      - name: 回写去重状态
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add announcements_state.json
+          git diff --cached --quiet || git commit -m "state: 公告监控基线更新"
+          git push
