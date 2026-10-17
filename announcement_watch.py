@@ -91,12 +91,16 @@ def main():
     elif not new_items:
         print("无新公告")
     else:
-        new_items.sort()
-        msgs = ["🔔 %s | %s\n%s\n%s" % (name, tstr, title, link)
-                for ts, name, tstr, title, link in new_items]
-        ok = send_feishu("【选股信号】📢 持仓公告 (%d条新)\n\n" % len(msgs) + "\n\n".join(msgs))
-        print("推送 %d 条新公告, 结果: %s" % (len(msgs), ok))
+        try:
+            new_items.sort()
+            msgs = ["🔔 %s | %s\n%s\n%s" % (name, tstr, title, link)
+                    for ts, name, tstr, title, link in new_items]
+            ok = send_feishu("【选股信号】📢 持仓公告 (%d条新)\n\n" % len(msgs) + "\n\n".join(msgs))
+            print("推送 %d 条新公告, 结果: %s" % (len(msgs), ok))
+        except Exception as e:
+            print("推送失败(不影响状态保存): %s" % e)
     json.dump(state, open(STATE_FILE, "w"), ensure_ascii=False, indent=1)
+    print("状态已保存")
 
 if __name__ == "__main__":
     main()
