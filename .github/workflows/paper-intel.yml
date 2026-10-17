@@ -1,0 +1,17 @@
+name: 论文情报员
+
+on:
+  schedule:
+    - cron: '30 22 * * 6'
+  workflow_dispatch:
+
+jobs:
+  intel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 扫描并推送
+        env:
+          FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+          FEISHU_SECRET: ${{ secrets.FEISHU_SECRET }}
+        run: python3 paper_intel.py
