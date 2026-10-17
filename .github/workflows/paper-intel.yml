@@ -14,4 +14,5 @@ jobs:
         env:
           FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
           FEISHU_SECRET: ${{ secrets.FEISHU_SECRET }}
+          AMINER_API_KEY: ${{ secrets.AMINER_API_KEY }}
         run: python3 paper_intel.py
