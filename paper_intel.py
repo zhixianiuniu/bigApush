@@ -70,7 +70,7 @@ def main():
                + "\n".join(lines)
                + "\n\n来源: 新浪财经 | 存素材时核对原文日期")
     from daily_news import send_feishu
-    ok = send_feishu(FEISHU_WEBHOOK, FEISHU_SECRET, "论文情报", content)
+    ok = send_feishu(content)
     print("推送结果:", ok)
     sys.exit(0 if ok else 1)
 
