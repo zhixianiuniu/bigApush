@@ -2,8 +2,7 @@ name: 持仓公告监控
 
 on:
   schedule:
-    - cron: '*/6 7-14 * * *'
-    - cron: '3 0-6,15-23 * * *'
+    - cron: '7 1-10 * * *'
   workflow_dispatch:
 
 permissions:
