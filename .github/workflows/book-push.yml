@@ -1,0 +1,16 @@
+name: 书房推送
+
+on:
+  schedule:
+    - cron: '37 23 * * *'
+  workflow_dispatch:
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 推送书房内容
+        env:
+          FEISHU_WEBHOOK_BOOK: ${{ secrets.FEISHU_WEBHOOK_BOOK }}
+        run: python3 book_push.py
