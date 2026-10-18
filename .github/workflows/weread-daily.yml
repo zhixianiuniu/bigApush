@@ -1,0 +1,17 @@
+name: 微信读书书摘
+
+on:
+  schedule:
+    - cron: '37 23 * * *'
+  workflow_dispatch:
+
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 推送今日书摘
+        env:
+          WEREAD_COOKIE: ${{ secrets.WEREAD_COOKIE }}
+          FEISHU_WEBHOOK_BOOK: ${{ secrets.FEISHU_WEBHOOK_BOOK }}
+        run: python3 weread_daily.py
