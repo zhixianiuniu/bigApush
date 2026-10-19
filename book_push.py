@@ -28,8 +28,8 @@ def daily_quote():
         poem, _, rest = content.partition("——")
         src = rest.split("http")[0].strip()
         poem = poem.strip()
-        if len(poem) > 60:
-            poem = poem[:60] + "…"
+        if len(poem) > 400:
+            poem = poem[:400] + "…"
         return "📖 %s\n—— %s" % (poem, src), None
     return None, "未解析到推荐句"
 
