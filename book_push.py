@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-# 书房推送: 每日诗词(古诗文网) + 周日豆瓣周榜 -> 飞书房群 (零登录, 永不过期)
+# 书房推送 v4: 每天北京09:00 诗词+金句+新书速递, 周日加周榜 -> 飞书房群
 import json, os, re, urllib.request
-from datetime import datetime
+from datetime import datetime, timedelta
 
 WEBHOOK = os.environ["FEISHU_WEBHOOK_BOOK"]
 UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/120.0 Safari/537.36"
 
-def http_get(url):
+def http_get(url, timeout=15):
     req = urllib.request.Request(url, headers={"User-Agent": UA})
-    with urllib.request.urlopen(req, timeout=15) as r:
+    with urllib.request.urlopen(req, timeout=timeout) as r:
         return r.read().decode("utf-8")
 
 def send(text):
@@ -20,8 +20,8 @@ def send(text):
 def daily_quote():
     try:
         html = http_get("https://www.gushiwen.cn/")
-    except Exception as e:
-        return None, str(e)
+    except Exception:
+        return None
     m = re.search(r'<textarea[^>]*id="txtare\d+"[^>]*>([^<]{20,})</textarea>', html)
     if m:
         content = m.group(1)
@@ -30,14 +30,42 @@ def daily_quote():
         poem = poem.strip()
         if len(poem) > 400:
             poem = poem[:400] + "…"
-        return "📖 %s\n—— %s" % (poem, src), None
-    return None, "未解析到推荐句"
+        return "📖 %s\n—— %s" % (poem, src)
+    return None
+
+def hitokoto():
+    try:
+        d = json.loads(http_get("https://v1.hitokoto.cn/?c=d&c=i&c=k", timeout=10))
+        who = d.get("from_who") or ""
+        frm = d.get("from") or ""
+        src = " ".join(x for x in [who, "《%s》" % frm if frm else ""] if x)
+        return "💬 %s%s" % (d.get("hitokoto", "").strip(), ("\n—— " + src) if src else "")
+    except Exception:
+        return None
+
+def latest_books():
+    try:
+        html = http_get("https://book.douban.com/latest")
+    except Exception:
+        return None
+    items = re.findall(r'href="(https://book.douban.com/subject/\d+/)"[^>]*>([^<]+)</a>', html)
+    seen, lines = set(), []
+    for link, t in items:
+        t = t.strip()
+        if t and t not in seen and len(t) > 1:
+            seen.add(t)
+            lines.append("• %s\n  %s" % (t, link))
+        if len(lines) >= 5:
+            break
+    if lines:
+        return "📕 豆瓣新书速递\n\n" + "\n\n".join(lines)
+    return None
 
 def douban_chart():
     try:
         html = http_get("https://book.douban.com/chart")
-    except Exception as e:
-        return None, str(e)
+    except Exception:
+        return None
     items = re.findall(r'href="(https://book.douban.com/subject/\d+/)"[^>]*>([^<]+)</a>', html)
     seen, lines = set(), []
     for link, t in items:
@@ -48,18 +76,22 @@ def douban_chart():
         if len(lines) >= 10:
             break
     if lines:
-        return "📚 豆瓣周榜 Top10\n\n" + "\n\n".join(lines), None
-    return None, "未解析到榜单"
+        return "📚 豆瓣周榜 Top10\n\n" + "\n\n".join(lines)
+    return None
 
 def main():
-    today = datetime.now()
+    utc = datetime.utcnow()
+    bj = utc + timedelta(hours=8)
     sections = []
-    q, err = daily_quote()
-    sections.append(q or "📖 (每日推荐抓取失败: %s)" % err)
-    if today.weekday() == 6:
-        c, err = douban_chart()
-        sections.append(c or "📚 (豆瓣榜抓取失败: %s)" % err)
-    text = "【选股信号】书房 · %s\n\n" % today.strftime("%Y-%m-%d") + "\n\n".join(sections)
+    for fn in (daily_quote, hitokoto, latest_books):
+        r = fn()
+        if r: sections.append(r)
+    if utc.weekday() == 6:
+        c = douban_chart()
+        if c: sections.append(c)
+    if not sections:
+        sections.append("📖 (内容暂不可用)")
+    text = "【选股信号】书房 · %s\n\n" % bj.strftime("%Y-%m-%d") + "\n\n".join(sections)
     ok = send(text)
     print("推送:", ok)
 
