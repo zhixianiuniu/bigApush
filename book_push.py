@@ -22,10 +22,15 @@ def daily_quote():
         html = http_get("https://www.gushiwen.cn/")
     except Exception as e:
         return None, str(e)
-    pairs = re.findall(r'<a[^>]*>([^<]{8,90})</a>\s*<a[^>]*>([^<]{2,50}《[^<]{2,40})</a>', html)
-    if pairs:
-        q, src = pairs[0]
-        return "📖 %s\n—— %s" % (q.strip(), src.strip()), None
+    m = re.search(r'<textarea[^>]*id="txtare\d+"[^>]*>([^<]{20,})</textarea>', html)
+    if m:
+        content = m.group(1)
+        poem, _, rest = content.partition("——")
+        src = rest.split("http")[0].strip()
+        poem = poem.strip()
+        if len(poem) > 60:
+            poem = poem[:60] + "…"
+        return "📖 %s\n—— %s" % (poem, src), None
     return None, "未解析到推荐句"
 
 def douban_chart():
