@@ -39,9 +39,9 @@
  },
  "sh601991": {
   "last_fractal": {
-   "date": "2026-10-23",
-   "type": "bot",
-   "price": 4.88
+   "date": "2026-10-26",
+   "type": "top",
+   "price": 5.08
   },
   "buy1": {
    "date": "2026-07-14",
@@ -94,9 +94,9 @@
  },
  "sz300758": {
   "last_fractal": {
-   "date": "2026-10-23",
-   "type": "bot",
-   "price": 10.08
+   "date": "2026-10-14",
+   "type": "top",
+   "price": 12.44
   },
   "buy1": null,
   "sell1": {
@@ -111,9 +111,9 @@
  },
  "sz002714": {
   "last_fractal": {
-   "date": "2026-10-20",
-   "type": "top",
-   "price": 42.96
+   "date": "2026-09-28",
+   "type": "bot",
+   "price": 40.24
   },
   "buy1": {
    "date": "2026-04-28",
@@ -122,10 +122,10 @@
    "area2": -0.46
   },
   "sell1": {
-   "date": "2026-10-20",
-   "price": 42.96
+   "date": "2026-09-01",
+   "price": 42.78
   },
-  "break_buy1": false,
+  "break_buy1": true,
   "zs": [
    37.63,
    41.55
@@ -162,7 +162,7 @@
   "buy1": {
    "date": "2026-07-20",
    "price": 3741.11,
-   "area1": -458.95,
+   "area1": -458.94,
    "area2": -288.54
   },
   "sell1": {
